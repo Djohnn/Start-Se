@@ -1,0 +1,11 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('cadastrar_empresa/', views.cadastrar_empresa, name="cadastrar_empresa"),
+    path('listar_empresas/', views.listar_empresas, name="listar_empresas"),
+    path('empresa/<int:id>', views.empresa, name="empresa"),
+    path('add_doc/<int:id>', views.add_doc, name="add_doc"),
+    path('excluir_doc/<int:id>', views.excluir_doc, name="excluir_doc"),
+    path('add_metricas/<int:id>', views.add_metricas, name="add_metricas"),
+]
