@@ -30,7 +30,6 @@ A aplicação é composta por três principais apps:
 
 - **Python**: Linguagem principal para o desenvolvimento da aplicação.
 - **Django**: Framework web utilizado para estruturar a aplicação.
-- **RAD (Rapid Application Development)**: Metodologia utilizada para o desenvolvimento rápido e iterativo.
 
 ## Instalação e Configuração
 
