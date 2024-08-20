@@ -4,6 +4,7 @@ from .models import PropostaInvestimento
 from django.contrib import messages
 from django.contrib.messages import constants
 from django.http import Http404
+from empresarios.models import Metricas
 # Create your views here.
 
 def sugestao(request):
@@ -22,6 +23,8 @@ def sugestao(request):
             empresas = Empresas.objects.filter(tempo_existencia='+5').filter(estagio="E")
         elif tipo == 'D':
             empresas = Empresas.objects.filter(tempo_existencia__in=['-6', '+6', '+1']).exclude(estagio="E")
+        elif tipo == "G":
+            empresas = Empresas.objects.all()
         
         empresas = empresas.filter(area__in=area)
         
@@ -49,7 +52,9 @@ def ver_empresa(request, id):
         concretizado = True
 
     percentual_disponivel = empresa.percentual_equity - percentual_vendido
-    return render(request, 'ver_empresa.html', {'empresa': empresa, 'documentos': documentos, 'percentual_vendido': int(percentual_vendido), 'concretizado': concretizado, 'percentual_disponivel': percentual_disponivel})
+
+    metricas = Metricas.objects.filter(empresa=empresa)
+    return render(request, 'ver_empresa.html', {'empresa': empresa, 'documentos': documentos, 'percentual_vendido': int(percentual_vendido), 'concretizado': concretizado, 'percentual_disponivel': percentual_disponivel, 'metricas': metricas})
 
 def realizar_proposta(request, id):
     valor = request.POST.get('valor')

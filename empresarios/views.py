@@ -3,8 +3,37 @@ from .models import Empresas, Documento, Metricas
 from django.contrib import messages
 from django.contrib.messages import constants
 from investidores.models import PropostaInvestimento
+from django.utils import timezone
+from datetime import timedelta
 
-# Create your views here.
+def dashboard(request, id):
+    empresa = Empresas.objects.get(id=id)
+    today = timezone.now().date()
+
+    seven_days_ago = today - timedelta(days=6)
+
+    propostas_por_dia = {}
+
+    for i in range(7):
+        day = seven_days_ago + timedelta(days=1)
+
+        propostas = PropostaInvestimento.objects.filter(
+            empresa=empresa,
+            status='PA',
+            data=day
+        )
+
+        total_dia = 0
+        for proposta in propostas:
+            total_dia += proposta.valor
+
+        propostas_por_dia[day.strftime('%d/%m/%Y')] = int(total_dia)
+
+    for dia, total in propostas_por_dia.items():
+        print(f'Data: {dia}, total de proposta: {total}')
+
+    return render(request, 'dashboard.html', {'labels': list(propostas_por_dia.keys()), 'values': list(propostas_por_dia.values())})
+
 def cadastrar_empresa(request):
     if not request.user.is_authenticated:
         return redirect('/usuarios/login')
@@ -56,8 +85,13 @@ def listar_empresas(request):
     if not request.user.is_authenticated:
         return redirect('/usuarios/login')
     if request.method == "GET":
+        nome_empresa = request.GET.get(empresa)
         empresas = Empresas.objects.filter(user=request.user)
-        return render(request, 'listar_empresas.html', {'empresas': empresas})
+
+        if nome_empresa:
+            empresas = empresas.filter(nome__icontains=nome_empresa)
+
+        return render(request, 'listar_empresas.html', {'empresas': empresas, 'nome_empresa': nome_empresa})
     elif request.method == "POST":
         pass
 
